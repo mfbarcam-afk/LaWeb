@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cosa Tuya - Productos Personalizados</title>
+
+  <!-- Tailwind y Font Awesome -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+  <!-- EmailJS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Crete+Round:ital@0;1&family=Poppins:wght@300;400;600;700;800&family=Playfair+Display:ital,wght@1,700&display=swap');
+
+    body { font-family: 'Poppins', sans-serif; scroll-behavior: smooth; }
+
+    .hero-gradient { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+
+    .product-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+    }
+
+    .testimonial-card {
+      background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+    }
+
+    .custom-shape-divider-bottom-1683915621 {
+      position: absolute; bottom: 0; left: 0; width: 100%; overflow: hidden; line-height: 0; transform: rotate(180deg);
+    }
+    .custom-shape-divider-bottom-1683915621 svg {
+      position: relative; display: block; width: calc(100% + 1.3px); height: 150px;
+    }
+    .custom-shape-divider-bottom-1683915621 .shape-fill { fill: #FFFFFF; }
+
+    .animate-bounce-slow { animation: bounce 3s infinite; }
+    @keyframes bounce { 0%,100% { transform: translateY(0);} 50% { transform: translateY(-20px);} }
+
+    /* Animación carrito */
+    .cart-item-added { animation: cartItemAdded 0.5s ease-out; }
+    @keyframes cartItemAdded { 0%{transform:scale(1);} 50%{transform:scale(1.2);} 100%{transform:scale(1);} }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <!-- HEADER -->
+  <header class="fixed w-full bg-white shadow-md z-50">
+    <div class="container mx-auto px-6 py-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <a href="#" class="flex items-center">
+            <span class="text-2xl font-bold text-indigo-600"
+                  style="font-family:'Playfair Display',serif;font-style:italic;font-weight:700;">
+              Cosa Tuya
+            </span>
+          </a>
+        </div>
+
+        <div id="mobileMenu" class="hidden md:flex items-center space-x-8">
+          <a href="#inicio" class="text-gray-700 hover:text-indigo-600 transition">Inicio</a>
+          <a href="#catalogo" class="text-gray-700 hover:text-indigo-600 transition">Catálogo</a>
+          <a href="#como-funciona" class="text-gray-700 hover:text-indigo-600 transition">Cómo funciona</a>
+          <a href="#testimonios" class="text-gray-700 hover:text-indigo-600 transition">Testimonios</a>
+          <a href="#contacto" class="text-gray-700 hover:text-indigo-600 transition">Contacto</a>
+
+          <button id="cartButton"
+                  class="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition relative">
+            <i class="fas fa-shopping-cart mr-2"></i>Carrito
+            <span id="cartCount"
+                  class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center hidden">0</span>
+          </button>
+        </div>
+
+        <div class="md:hidden">
+          <button id="mobileMenuButton" class="text-gray-700 focus:outline-none">
+            <i class="fas fa-bars text-2xl"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section id="inicio" class="hero-gradient pt-32 pb-20 relative overflow-hidden">
+    <div class="container mx-auto px-6 flex flex-col md:flex-row items-center">
+      <div class="md:w-1/2 text-white mb-10 md:mb-0">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">
+          Personaliza tus <span class="text-yellow-300">artículos únicos</span>
+        </h1>
+        <p class="text-xl mb-8">Personaliza camisetas, tazas, fundas y más con tus diseños favoritos con una calidad premium.</p>
+        <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+          <a href="#catalogo" class="bg-white text-indigo-600 px-6 py-3 rounded-full font-semibold hover:bg-gray-100 transition text-center">Ver catálogo</a>
+          <a href="#como-funciona" class="border-2 border-white text-white px-6 py-3 rounded-full font-semibold hover:bg-white hover:bg-opacity-10 transition text-center">Cómo funciona</a>
+        </div>
+      </div>
+
+      <div class="md:w-1/2 relative">
+        <div class="animate-bounce-slow">
+          <img src="https://images.unsplash.com/photo-1527719327859-c6ce80353573?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80"
+               alt="Productos personalizados"
+               class="w-full max-w-md mx-auto rounded-xl shadow-2xl"/>
+        </div>
+        <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-purple-300 rounded-full opacity-20"></div>
+        <div class="absolute -top-10 -right-10 w-32 h-32 bg-yellow-300 rounded-full opacity-20"></div>
+      </div>
+    </div>
+
+    <div class="custom-shape-divider-bottom-1683915621">
+      <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg"
+           viewBox="0 0 1200 120" preserveAspectRatio="none">
+        <path
+          d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"
+          class="shape-fill"></path>
+      </svg>
+    </div>
+  </section>
+
+  <!-- CATÁLOGO -->
+  <section id="catalogo" class="py-20 bg-white">
+    <div class="container mx-auto px-6">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Nuestro <span class="text-indigo-600">Catálogo</span></h2>
+        <p class="text-gray-600 max-w-2xl mx-auto">Elige entre nuestra variedad de productos personalizables. Todos de alta calidad y con múltiples opciones de diseño.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Producto 1 -->
+        <div class="product-card bg-white rounded-xl overflow-hidden shadow-lg transition duration-500">
+          <div class="relative overflow-hidden h-64">
+            <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=880&q=80"
+                 alt="Camisetas personalizadas" class="w-full h-full object-cover"/>
+            <div class="absolute inset-0 bg-indigo-600 bg-opacity-0 flex items-center justify-center opacity-0 hover:opacity-100 hover:bg-opacity-30 transition duration-300">
+              <button class="bg-white text-indigo-600 px-6 py-2 rounded-full font-semibold">Personalizar</button>
+            </div>
+          </div>
+          <div class="p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-2">Camisetas Personalizadas</h3>
+            <p class="text-gray-600 mb-4">Diseña tu propia camiseta con imágenes, textos y colores únicos.</p>
+            <div class="flex justify-between items-center">
+              <span class="text-xl font-bold text-indigo-600">Desde $19.99</span>
+              <button class="add-to-cart bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition"
+                      data-id="1" data-name="Camisetas Personalizadas" data-price="19.99">
+                <i class="fas fa-plus mr-1"></i> Carrito
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Producto 2 -->
+        <div class="product-card bg-white rounded-xl overflow-hidden shadow-lg transition duration-500">
+          <div class="relative overflow-hidden h-64">
+            <img src="https://images.unsplash.com/photo-1516684732162-798a0062be99?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=884&q=80"
+                 alt="Tazas personalizadas" class="w-full h-full object-cover"/>
+            <div class="absolute inset-0 bg-indigo-600 bg-opacity-0 flex items-center justify-center opacity-0 hover:opacity-100 hover:bg-opacity-30 transition duration-300">
+              <button class="bg-white text-indigo-600 px-6 py-2 rounded-full font-semibold">Personalizar</button>
+            </div>
+          </div>
+          <div class="p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-2">Tazas Personalizadas</h3>
+            <p class="text-gray-600 mb-4">Crea la taza perfecta con tus fotos, diseños o mensajes especiales.</p>
+            <div class="flex justify-between items-center">
+              <span class="text-xl font-bold text-indigo-600">Desde $12.99</span>
+              <button class="add-to-cart bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition"
+                      data-id="2" data-name="Tazas Personalizadas" data-price="12.99">
+                <i class="fas fa-plus mr-1"></i> Carrito
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Producto 3 -->
+        <div class="product-card bg-white rounded-xl overflow-hidden shadow-lg transition duration-500">
+          <div class="relative overflow-hidden h-64">
+            <img src="https://images.unsplash.com/photo-1601593768790-1a0b81a24c1b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80"
+                 alt="Fundas personalizadas" class="w-full h-full object-cover"/>
+            <div class="absolute inset-0 bg-indigo-600 bg-opacity-0 flex items-center justify-center opacity-0 hover:opacity-100 hover:bg-opacity-30 transition duration-300">
+              <button class="bg-white text-indigo-600 px-6 py-2 rounded-full font-semibold">Personalizar</button>
+            </div>
+          </div>
+          <div class="p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-2">Fundas Personalizadas</h3>
+            <p class="text-gray-600 mb-4">Protege tu dispositivo con un diseño único que refleje tu estilo.</p>
+            <div class="flex justify-between items-center">
+              <span class="text-xl font-bold text-indigo-600">Desde $14.99</span>
+              <button class="add-to-cart bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition"
+                      data-id="3" data-name="Fundas Personalizadas" data-price="14.99">
+                <i class="fas fa-plus mr-1"></i> Carrito
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center mt-12">
+        <a href="#" class="inline-block bg-indigo-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-indigo-700 transition">
+          Ver todos los productos <i class="fas fa-arrow-right ml-2"></i>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CÓMO FUNCIONA -->
+  <section id="como-funciona" class="py-20 bg-gray-50">
+    <div class="container mx-auto px-6">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Cómo <span class="text-indigo-600">funciona</span></h2>
+        <p class="text-gray-600 max-w-2xl mx-auto">Solo necesitas 4 sencillos pasos para tener tus productos personalizados en casa.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div class="text-center p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition">
+          <div class="w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <span class="text-indigo-600 text-2xl font-bold">1</span>
+          </div>
+          <h3 class="text-xl font-bold text-gray-800 mb-3">Elige tu producto</h3>
+          <p class="text-gray-600">Selecciona entre camisetas, tazas, fundas... y elige el modelo que prefieras.</p>
+        </div>
+
+        <div class="text-center p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition">
+          <div class="w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <span class="text-indigo-600 text-2xl font-bold">2</span>
+          </div>
+          <h3 class="text-xl font-bold text-gray-800 mb-3">Personalízalo</h3>
+          <p class="text-gray-600">Contacta con nosotros y cuéntanos tu idea.</p>
+        </div>
+
+        <div class="text-center p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition">
+          <div class="w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <span class="text-indigo-600 text-2xl font-bold">3</span>
+          </div>
+          <h3 class="text-xl font-bold text-gray-800 mb-3">Revisa y paga</h3>
+          <p class="text-gray-600">Confirma tu diseño, elige método de pago y completa tu pedido.</p>
+        </div>
+
+        <div class="text-center p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition">
+          <div class="w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <span class="text-indigo-600 text-2xl font-bold">4</span>
+          </div>
+          <h3 class="text-xl font-bold text-gray-800 mb-3">Recogida o Entrega</h3>
+          <p class="text-gray-600">Elige si prefieres recogerlo en tienda o recibirlo en tu domicilio.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIOS -->
+  <section id="testimonios" class="py-20 bg-white">
+    <div class="container mx-auto px-6">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Lo que dicen <span class="text-indigo-600">nuestros clientes</span></h2>
+        <p class="text-gray-600 max-w-2xl mx-auto">Miles de clientes satisfechos con nuestros productos personalizados.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="testimonial-card p-8 rounded-xl">
+          <div class="flex items-center mb-4">
+            <div class="flex-shrink-0">
+              <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Cliente" class="w-12 h-12 rounded-full"/>
+            </div>
+            <div class="ml-4">
+              <h4 class="font-bold text-gray-800">María González</h4>
+              <div class="flex text-yellow-400">
+                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+              </div>
+            </div>
+          </div>
+          <p class="text-gray-600">"Las camisetas quedaron perfectas, exactamente como las había diseñado. La calidad del material es excelente y el proceso fue muy sencillo."</p>
+        </div>
+
+        <div class="testimonial-card p-8 rounded-xl">
+          <div class="flex items-center mb-4">
+            <div class="flex-shrink-0">
+              <img src="https://randomuser.me/api/portraits/men/75.jpg" alt="Cliente" class="w-12 h-12 rounded-full"/>
+            </div>
+            <div class="ml-4">
+              <h4 class="font-bold text-gray-800">Carlos Martínez</h4>
+              <div class="flex text-yellow-400">
+                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+              </div>
+            </div>
+          </div>
+          <p class="text-gray-600">"Hice tazas personalizadas para el equipo de trabajo y quedaron geniales. El servicio al cliente fue muy atento y el envío llegó antes de lo esperado."</p>
+        </div>
+
+        <div class="testimonial-card p-8 rounded-xl">
+          <div class="flex items-center mb-4">
+            <div class="flex-shrink-0">
+              <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Cliente" class="w-12 h-12 rounded-full"/>
+            </div>
+            <div class="ml-4">
+              <h4 class="font-bold text-gray-800">Laura Sánchez</h4>
+              <div class="flex text-yellow-400">
+                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+              </div>
+            </div>
+          </div>
+          <p class="text-gray-600">"La funda de mi teléfono con la foto de mi perro es lo más lindo que tengo. La calidad de impresión es increíble y el ajuste perfecto. ¡Volveré a pedir más!"</p>
+        </div>
+      </div>
+
+      <div class="mt-12 text-center">
+        <button class="inline-flex items-center text-indigo-600 font-semibold hover:text-indigo-800 transition">
+          Ver más testimonios <i class="fas fa-chevron-down ml-2"></i>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACTO -->
+  <section id="contacto" class="py-20 bg-gray-50">
+    <div class="container mx-auto px-6">
+      <div class="flex flex-col md:flex-row">
+        <div class="md:w-1/2 mb-12 md:mb-0">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-6">Contáctanos</h2>
+          <p class="text-gray-600 mb-8">¿Tienes alguna pregunta o necesitas ayuda con tu pedido? Estamos aquí para ayudarte.</p>
+
+          <div class="space-y-6">
+            <div class="flex items-start">
+              <div class="flex-shrink-0 bg-indigo-100 p-3 rounded-full text-indigo-600">
+                <i class="fas fa-envelope text-xl"></i>
+              </div>
+              <div class="ml-4">
+                <h4 class="font-bold text-gray-800">Correo electrónico</h4>
+                <p class="text-gray-600">cosatuya.mf@gmail.com</p>
+              </div>
+            </div>
+
+            <div class="flex items-start">
+              <div class="flex-shrink-0 bg-indigo-100 p-3 rounded-full text-indigo-600">
+                <i class="fas fa-phone-alt text-xl"></i>
+              </div>
+              <div class="ml-4">
+                <h4 class="font-bold text-gray-800">Teléfono</h4>
+                <p class="text-gray-600">+34 625 80 58 47</p>
+              </div>
+            </div>
+
+            <div class="flex items-start">
+              <div class="flex-shrink-0 bg-indigo-100 p-3 rounded-full text-indigo-600">
+                <i class="fas fa-map-marker-alt text-xl"></i>
+              </div>
+              <div class="ml-4">
+                <h4 class="font-bold text-gray-800">Dirección</h4>
+                <p class="text-gray-600">Avenida de Sevilla, 19 / Brenes</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-8 flex space-x-4">
+            <a href="https://www.instagram.com/cosa_tuya_" target="_blank" class="bg-pink-600 text-white p-3 rounded-full hover:bg-pink-700 transition">
+              <i class="fab fa-instagram"></i>
+            </a>
+            <a href="https://wa.me/34625805847" target="_blank" class="bg-green-500 text-white p-3 rounded-full hover:bg-green-600 transition">
+              <i class="fab fa-whatsapp"></i>
+            </a>
+            <a href="https://tiktok.com" target="_blank" class="bg-black text-white p-3 rounded-full hover:bg-gray-800 transition">
+              <i class="fab fa-tiktok"></i>
+            </a>
+          </div>
+        </div>
+
+        <div class="md:w-1/2 md:pl-12">
+          <form id="contactForm" class="bg-white p-8 rounded-xl shadow-md">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6">Envíanos un mensaje</h3>
+
+            <div class="mb-6">
+              <label for="nombre" class="block text-gray-700 font-medium mb-2">Nombre completo</label>
+              <input type="text" id="nombre" name="from_name"
+                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                     placeholder="Tu nombre" required/>
+            </div>
+
+            <div class="mb-6">
+              <label for="email" class="block text-gray-700 font-medium mb-2">Correo electrónico</label>
+              <input type="email" id="email" name="from_email"
+                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                     placeholder="tu@email.com" required/>
+            </div>
+
+            <div class="mb-6">
+              <label for="asunto" class="block text-gray-700 font-medium mb-2">Asunto</label>
+              <input type="text" id="asunto" name="subject"
+                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                     placeholder="¿Cómo podemos ayudarte?" required/>
+            </div>
+
+            <div class="mb-6">
+              <label for="mensaje" class="block text-gray-700 font-medium mb-2">Mensaje</label>
+              <textarea id="mensaje" name="message" rows="4"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        placeholder="Escribe tu mensaje aquí..." required></textarea>
+            </div>
+
+            <button type="submit"
+                    class="w-full bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition">
+              Enviar mensaje <i class="fas fa-paper-plane ml-2"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MODAL CARRITO -->
+  <div id="cartModal" class="fixed inset-0 z-50 hidden overflow-hidden">
+    <div id="cartOverlay" class="absolute inset-0 bg-black bg-opacity-50"></div>
+    <div class="relative max-w-md w-full bg-white h-screen overflow-y-auto right-0 ml-auto">
+      <div class="p-6 flex flex-col h-full">
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="text-2xl font-bold">Tu Carrito</h3>
+          <button id="closeCart" class="text-gray-500 hover:text-gray-700">
+            <i class="fas fa-times text-2xl"></i>
+          </button>
+        </div>
+
+        <div id="cartItems" class="flex-grow space-y-4 overflow-y-auto">
+          <p id="emptyCartMessage" class="text-gray-500">Tu carrito está vacío.</p>
+        </div>
+
+        <div class="border-t border-gray-200 mt-2 pt-6">
+          <div class="flex justify-end mb-4">
+            <button id="emptyCart" class="text-red-600 hover:text-red-800 font-medium flex items-center hidden">
+              <i class="fas fa-trash mr-2"></i> Vaciar carrito
+            </button>
+          </div>
+          <div class="flex justify-between mb-2">
+            <span class="font-semibold">Subtotal:</span>
+            <span id="cartSubtotal">$0.00</span>
+          </div>
+          <div class="flex justify-between mb-4">
+            <span class="font-semibold">Envío:</span>
+            <span id="cartShipping">$0.00</span>
+          </div>
+          <div class="flex justify-between text-xl font-bold">
+            <span>Total:</span>
+            <span id="cartTotal">$0.00</span>
+          </div>
+
+          <button id="checkoutBtn"
+                  class="w-full bg-indigo-600 text-white py-3 rounded-lg mt-6 hover:bg-indigo-700 transition disabled:bg-gray-400"
+                  disabled>
+            Proceder al pago
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="bg-gray-800 text-white py-12">
+    <div class="container mx-auto px-6">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div>
+          <div class="flex items-center mb-4">
+            <h3 class="text-xl font-bold" style="font-family:'Playfair Display',serif;font-style:italic;font-weight:700;">
+              Cosa Tuya
+            </h3>
+          </div>
+          <p class="text-gray-400">Imagina, crea y personaliza tus productos favoritos con nosotros.</p>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-lg mb-4">Enlaces rápidos</h4>
+          <ul class="space-y-2">
+            <li><a href="#inicio" class="text-gray-400 hover:text-white transition">Inicio</a></li>
+            <li><a href="#catalogo" class="text-gray-400 hover:text-white transition">Catálogo</a></li>
+            <li><a href="#como-funciona" class="text-gray-400 hover:text-white transition">Cómo funciona</a></li>
+            <li><a href="#testimonios" class="text-gray-400 hover:text-white transition">Testimonios</a></li>
+            <li><a href="#contacto" class="text-gray-400 hover:text-white transition">Contacto</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-lg mb-4">Productos</h4>
+          <ul class="space-y-2">
+            <li><a href="#" class="text-gray-400 hover:text-white transition">Camisetas</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition">Tazas</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition">Fundas</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition">Ofertas</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition">Nuevos productos</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-lg mb-4">Suscríbete</h4>
+          <p class="text-gray-400 mb-4">Recibe ofertas exclusivas y novedades en tu correo.</p>
+          <div class="flex">
+            <input type="email" id="subscribeEmail" placeholder="Tu email"
+                   class="px-4 py-2 rounded-l-lg focus:outline-none text-gray-800 w-full"/>
+            <button id="subscribeBtn" class="bg-indigo-600 px-4 py-2 rounded-r-lg hover:bg-indigo-700 transition">
+              <i class="fas fa-paper-plane mr-2"></i>Suscribirme
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="border-t border-gray-700 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+        <p class="text-gray-400 mb-4 md:mb-0">© 2025 Cosa Tuya.</p>
+        <div class="flex space-x-6"></div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- SCRIPT PRINCIPAL -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // =========================
+      //  EmailJS - Inicialización (usar string con la public key)
+      // =========================
+      if (typeof emailjs === 'undefined') {
+        console.error('EmailJS SDK no cargado');
+      } else {
+        emailjs.init("_4mqnakqu1KdEn6Le"); // <-- usar string, no objeto
+      }
+
+      // =========================
+      //  Utilidades para reintentos y formato
+      // =========================
+      function sleep(ms) { return new Promise(res => setTimeout(res, ms)); }
+
+      async function sendFormWithRetry(service, template, formElement, maxAttempts = 3) {
+        if (!navigator.onLine) throw new Error('Sin conexión a Internet');
+        for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+          try {
+            return await emailjs.sendForm(service, template, formElement);
+          } catch (err) {
+            console.warn(`Intento ${attempt} fallo:`, err);
+            if (attempt === maxAttempts) throw err;
+            await sleep(500 * Math.pow(2, attempt)); // backoff exponencial
+          }
+        }
+      }
+
+      async function sendWithRetry(service, template, payload, maxAttempts = 3) {
+        if (!navigator.onLine) throw new Error('Sin conexión a Internet');
+        for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+          try {
+            return await emailjs.send(service, template, payload);
+          } catch (err) {
+            console.warn(`Intento ${attempt} fallo:`, err);
+            if (attempt === maxAttempts) throw err;
+            await sleep(500 * Math.pow(2, attempt));
+          }
+        }
+      }
+
+      // =========================
+      //  Menú móvil
+      // =========================
+      const mobileMenuButton = document.getElementById('mobileMenuButton');
+      const mobileMenu = document.getElementById('mobileMenu');
+      mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+
+      // =========================
+      //  Carrito
+      // =========================
+      const cartButton = document.getElementById('cartButton');
+      const cartModal = document.getElementById('cartModal');
+      const cartOverlay = document.getElementById('cartOverlay');
+      const closeCart = document.getElementById('closeCart');
+      const addToCartButtons = document.querySelectorAll('.add-to-cart');
+      const cartItemsContainer = document.getElementById('cartItems');
+      const cartCount = document.getElementById('cartCount');
+      const cartSubtotal = document.getElementById('cartSubtotal');
+      const cartShipping = document.getElementById('cartShipping');
+      const cartTotal = document.getElementById('cartTotal');
+      const emptyCartBtn = document.getElementById('emptyCart');
+      const checkoutBtn = document.getElementById('checkoutBtn');
+      const emptyCartMessage = document.getElementById('emptyCartMessage');
+
+      let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const SHIPPING_COST = 5.00;
+
+      function formatCurrency(n) {
+        return `$${Number(n).toFixed(2)}`;
+      }
+
+      function escapeHtml(unsafe) {
+        return String(unsafe)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      function saveCart() {
+        localStorage.setItem('cart', JSON.stringify(cart));
+      }
+
+      function updateCart() {
+        cartItemsContainer.innerHTML = '';
+        let subtotal = 0;
+        let totalItems = 0;
+
+        if (!cart || cart.length === 0) {
+          emptyCartMessage.style.display = 'block';
+          emptyCartBtn.classList.add('hidden');
+          checkoutBtn.disabled = true;
+          checkoutBtn.classList.add('disabled:bg-gray-400');
+        } else {
+          emptyCartMessage.style.display = 'none';
+          emptyCartBtn.classList.remove('hidden');
+          checkoutBtn.disabled = false;
+          checkoutBtn.classList.remove('disabled:bg-gray-400');
+
+          cart.forEach(item => {
+            if (!item.id || !item.name || isNaN(item.price) || isNaN(item.quantity)) return;
+
+            const itemEl = document.createElement('div');
+            itemEl.className = 'flex justify-between items-center border-b pb-2';
+            itemEl.innerHTML = `
+              <div>
+                <p class="font-semibold">${escapeHtml(item.name)}</p>
+                <p class="text-gray-500 text-sm">${formatCurrency(item.price)} x ${Number(item.quantity)}</p>
+              </div>
+              <span class="font-bold">${formatCurrency(Number(item.price) * Number(item.quantity))}</span>
+            `;
+            cartItemsContainer.appendChild(itemEl);
+
+            subtotal += Number(item.price) * Number(item.quantity);
+            totalItems += Number(item.quantity);
+          });
+        }
+
+        const finalShipping = cart.length > 0 ? SHIPPING_COST : 0;
+        cartSubtotal.textContent = formatCurrency(subtotal);
+        cartShipping.textContent = formatCurrency(finalShipping);
+        cartTotal.textContent = formatCurrency(subtotal + finalShipping);
+
+        if (totalItems > 0) {
+          cartCount.textContent = totalItems;
+          cartCount.classList.remove('hidden');
+        } else {
+          cartCount.classList.add('hidden');
+        }
+
+        saveCart();
+      }
+
+      // Abrir/Cerrar modal
+      const openCart = () => { cartModal.classList.remove('hidden'); document.body.style.overflow = 'hidden'; };
+      const closeCartModal = () => { cartModal.classList.add('hidden'); document.body.style.overflow = ''; };
+
+      cartButton.addEventListener('click', openCart);
+      closeCart.addEventListener('click', closeCartModal);
+      cartOverlay.addEventListener('click', closeCartModal);
+
+      // Añadir productos (protegido cuando se hace click en el <i>)
+      addToCartButtons.forEach(btn => {
+        btn.addEventListener('click', (ev) => {
+          const button = ev.currentTarget.closest('button.add-to-cart');
+          if (!button) return;
+
+          const id = button.dataset.id;
+          const name = button.dataset.name;
+          const price = parseFloat(button.dataset.price || '0');
+
+          const existing = cart.find(i => i.id === id);
+          if (existing) existing.quantity += 1;
+          else cart.push({ id, name, price, quantity: 1 });
+
+          updateCart();
+          cartButton.classList.add('cart-item-added');
+          setTimeout(() => cartButton.classList.remove('cart-item-added'), 500);
+        });
+      });
+
+      // Vaciar carrito
+      emptyCartBtn.addEventListener('click', () => { cart = []; updateCart(); });
+
+      // Checkout (placeholder)
+      checkoutBtn.addEventListener('click', () => {
+        alert('Gracias por tu compra. Integración de pago pendiente.');
+      });
+
+      // =========================
+      //  Formulario de Contacto (mejorado con reintentos)
+      // =========================
+      const contactForm = document.getElementById('contactForm');
+      if (contactForm) {
+        contactForm.addEventListener('submit', async function (e) {
+          e.preventDefault();
+
+          const nombre = this.elements['from_name'].value.trim();
+          const email = this.elements['from_email'].value.trim();
+          const mensaje = this.elements['message'].value.trim();
+          if (!nombre || !email || !mensaje) {
+            alert('Por favor completa todos los campos requeridos');
+            return;
+          }
+
+          if (!navigator.onLine) {
+            alert('No hay conexión a Internet. Intenta nuevamente cuando estés conectado.');
+            return;
+          }
+
+          const submitBtn = this.querySelector('button[type="submit"]');
+          const originalText = submitBtn.innerHTML;
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+
+          try {
+            // service: service_ssq8ucc | template: template_do797nt
+            await sendFormWithRetry('service_ssq8ucc', 'template_do797nt', this, 3);
+            alert('¡Mensaje enviado con éxito!');
+            this.reset();
+          } catch (error) {
+            console.error('Error al enviar el formulario:', error);
+            alert('Error al enviar el mensaje. Por favor, inténtalo de nuevo más tarde.');
+          } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+          }
+        });
+      }
+
+      // =========================
+      //  Suscripción (footer) con reintentos
+      // =========================
+      const subscribeBtn = document.getElementById('subscribeBtn');
+      const subscribeEmail = document.getElementById('subscribeEmail');
+
+      function isValidEmail(email) {
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailPattern.test(email);
+      }
+
+      async function handleSubscribe() {
+        const email = subscribeEmail.value.trim();
+        if (!email) { alert('Por favor introduce tu email'); return; }
+        if (!isValidEmail(email)) { alert('Introduce un correo válido'); return; }
+        if (!navigator.onLine) { alert('No hay conexión a Internet. Intenta más tarde.'); return; }
+
+        subscribeBtn.disabled = true;
+        const original = subscribeBtn.innerHTML;
+        subscribeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+
+        try {
+          if (typeof emailjs === 'undefined') throw new Error('EmailJS SDK no está cargado');
+
+          // Enviar los parámetros que la plantilla puede requerir.
+          // Incluimos varias claves comunes para cubrir distintos nombres de variable en el template.
+          const templateParams = {
+            subscriber_email: email,
+            user_email: email,
+            reply_to: email,
+            to_email: 'cosatuya.mf@gmail.com',
+            to_name: 'Cosa Tuya',
+            from_name: 'Web Suscripción'
+          };
+
+          const resp = await emailjs.send('service_ssq8ucc', 'template_zu4x847', templateParams);
+          console.log('EmailJS respuesta:', resp);
+
+          // Comprobación básica de éxito
+          if (resp && (resp.status === 200 || resp.status === 'OK')) {
+            alert('¡Gracias por suscribirte!');
+            subscribeEmail.value = '';
+          } else {
+            // Si la respuesta no indica éxito, lanzamos para entrar en el catch y mostrar detalles
+            throw resp || new Error('Respuesta inesperada de EmailJS');
+          }
+        } catch (err) {
+          console.error('FAILED...', err);
+          let msg = 'Error al procesar la suscripción. Inténtalo de nuevo.';
+          try {
+            if (err && err.text) msg += ' (' + err.text + ')';
+            else if (err && err.status) msg += ' (status: ' + err.status + ')';
+            else if (err && err.message) msg += ' (' + err.message + ')';
+            else if (typeof err === 'string') msg += ' (' + err + ')';
+            else msg += ' (comprueba la consola para más detalles)';
+          } catch (e) { /* ignore */ }
+          alert(msg);
+        } finally {
+          subscribeBtn.disabled = false;
+          subscribeBtn.innerHTML = original;
+        }
+      }
+
+      subscribeBtn.addEventListener('click', handleSubscribe);
+      subscribeEmail.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); handleSubscribe(); }
+      });
+
+      // Inicializar vista del carrito
+      updateCart();
+
+      // Guardar carrito al salir
+      window.addEventListener('beforeunload', saveCart);
+    });
+  </script>
+</body>
+</html>
